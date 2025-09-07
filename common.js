@@ -11,6 +11,7 @@
  * @returns {any}
  */
 function getData(key, defaultValue) {
+   
   const raw = localStorage.getItem(key);
   if (!raw) return defaultValue;
   try {
@@ -27,6 +28,7 @@ function getData(key, defaultValue) {
  */
 function setData(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
+    syncToRemote();
 }
 
 /**
@@ -129,8 +131,10 @@ function deleteRecord(storeKey, id) {
   const list = getData(storeKey, []);
   const newList = list.filter((r) => r.id !== id);
   setData(storeKey, newList);
+    syncToRemote();
 }
 
+  
 /**
  * Format a number as currency with two decimal places.
  * @param {number} value
@@ -151,3 +155,57 @@ window.datatecStorage = {
   formatMoney,
   generateId,
 };
+
+/** Remote sync configuration */
+// Replace with your deployed Google Apps Script URL
+const APPS_SCRIPT_URL = '';
+
+async function loadRemoteData() {
+  if (!APPS_SCRIPT_URL) return;
+  try {
+    const response = await fetch(`${APPS_SCRIPT_URL}?action=read`);
+    if (!response.ok) throw new Error('Network response was not ok');
+    const data = await response.json();
+    Object.keys(data).forEach(key => {
+      if (data[key] !== null) {
+        localStorage.setItem(key, JSON.stringify(data[key]));
+      }
+    });
+    console.log('Loaded remote data');
+  } catch (error) {
+    console.error('Failed to load remote data:', error);
+  }
+}
+
+async function syncToRemote() {
+  if (!APPS_SCRIPT_URL) return;
+  const keys = [
+    'customers',
+    'suppliers',
+    'items',
+    'quotations',
+    'sales',
+    'deliveries',
+    'invoices',
+    'purchaseOrders'
+  ];
+  const payload = {};
+  keys.forEach(key => {
+    const raw = localStorage.getItem(key);
+    payload[key] = raw ? JSON.parse(raw) : null;
+  });
+  try {
+    const resp = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'write', data: payload })
+    });
+    if (!resp.ok) throw new Error('Network response was not ok');
+    console.log('Synced data to remote');
+  } catch (error) {
+    console.error('Failed to sync data to remote:', error);
+  }
+}
+
+// Automatically load remote data on page load
+window.addEventListener('DOMContentLoaded', loadRemoteData);
