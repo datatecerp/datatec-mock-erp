@@ -158,7 +158,7 @@ window.datatecStorage = {
 
 /** Remote sync configuration */
 // Replace with your deployed Google Apps Script URL
-const APPS_SCRIPT_URL = '';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwIvP04lEelvkg-RCbY4Ce83nrqTT05D5w9kjg4Vu4F6bL5oLcFB3jjPNKMRI0u-bw/exec';
 
 async function loadRemoteData() {
   if (!APPS_SCRIPT_URL) return;
