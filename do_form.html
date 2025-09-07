@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Delivery Order Form - Datatec ERP</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <img src="assets/company-logo.jpg" alt="Datatec logo">
+    <div class="company-info">
+      <h1>Datatec ERP</h1>
+      <p>Delivery Order Form</p>
+    </div>
+  </header>
+  <nav>
+    <a href="quotation_list.html">Quotations</a>
+    <a href="sales_list.html">Sales Orders</a>
+    <a href="po_list.html">Purchase Orders</a>
+    <a href="invoice_list.html">Invoices</a>
+    <a href="do_list.html" class="active">Delivery Orders</a>
+    <a href="items.html">Items</a>
+  </nav>
+  <div class="container">
+    <h1 class="page-title" id="doFormTitle">New Delivery Order</h1>
+    <input type="hidden" id="doRecordId" />
+    <div class="form-row">
+      <div>
+        <label>Delivery Order No.</label>
+        <input type="text" id="doNumber" readonly />
+      </div>
+      <div>
+        <label>Delivery Date</label>
+        <input type="date" id="doDate" />
+      </div>
+      <div>
+        <label>SO Number</label>
+        <input type="text" id="doSONumber" readonly />
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Customer</label>
+        <input type="text" id="doCustomer" list="customerList" />
+        <datalist id="customerList"></datalist>
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Source</label>
+        <input type="text" id="doSource" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div style="flex:1 1 100%;">
+        <label>Delivery Address</label>
+        <textarea id="doDeliveryAddress" rows="3"></textarea>
+      </div>
+    </div>
+    <h2>Items</h2>
+    <table class="items-table" id="doItemsTable">
+      <thead>
+        <tr>
+          <th style="width:20%">Part Number</th>
+          <th style="width:40%">Description</th>
+          <th style="width:10%">Qty</th>
+          <th style="width:25%">Serial Numbers</th>
+          <th style="width:5%"></th>
+        </tr>
+      </thead>
+      <tbody id="doItemsBody">
+      </tbody>
+    </table>
+    <button class="btn" id="doAddItemBtn" type="button">+ Add Item</button>
+    <div style="clear:both;"></div>
+    <div>
+      <button class="btn" id="saveDOBtn">Save Delivery Order</button>
+      <button class="btn" id="exportDoBtn" type="button">Export PDF</button>
+      <button class="btn" id="backDoBtn" type="button">Back to List</button>
+    </div>
+  </div>
+  <footer>
+    &copy; <span id="yearSpan"></span> Datatec Hardware Sdn Bhd. All rights reserved.
+  </footer>
+  <script src="common.js"></script>
+  <script src="do_form.js"></script>
+</body>
+</html>

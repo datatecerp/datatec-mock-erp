@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sales Order Form - Datatec ERP</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <img src="assets/company-logo.jpg" alt="Datatec logo">
+    <div class="company-info">
+      <h1>Datatec ERP</h1>
+      <p>Sales Order Form</p>
+    </div>
+  </header>
+  <nav>
+    <a href="quotation_list.html">Quotations</a>
+    <a href="sales_list.html" class="active">Sales Orders</a>
+    <a href="po_list.html">Purchase Orders</a>
+    <a href="invoice_list.html">Invoices</a>
+    <a href="do_list.html">Delivery Orders</a>
+    <a href="items.html">Items</a>
+  </nav>
+  <div class="container">
+    <h1 class="page-title" id="soFormTitle">New Sales Order</h1>
+    <input type="hidden" id="soRecordId" />
+    <div class="form-row">
+      <div>
+        <label>Sales Order No.</label>
+        <input type="text" id="salesOrderNumber" readonly />
+      </div>
+      <div>
+        <label>SO Date</label>
+        <input type="date" id="salesOrderDate" />
+      </div>
+      <div>
+        <label>Delivery Date</label>
+        <input type="date" id="deliveryDate" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Customer</label>
+        <input type="text" id="salesCustomer" list="customerList" />
+        <datalist id="customerList"></datalist>
+      </div>
+      <div>
+        <label>Attention</label>
+        <input type="text" id="salesAttention" />
+      </div>
+      <!-- Email / Phone field removed as per new requirements -->
+      <!-- <div>
+        <label>Email / Phone</label>
+        <input type="text" id="salesEmail" />
+      </div> -->
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Billing Address</label>
+        <textarea id="salesBilling" rows="3"></textarea>
+      </div>
+      <div>
+        <label>Shipping Address</label>
+        <textarea id="salesShipping" rows="3"></textarea>
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Currency</label>
+        <select id="salesCurrency">
+          <option value="MYR">MYR</option>
+          <option value="USD">USD</option>
+          <option value="SGD">SGD</option>
+        </select>
+      </div>
+      <div>
+        <label>Tax Scheme (%)</label>
+        <input type="number" id="salesTaxScheme" step="0.01" />
+      </div>
+      <div>
+        <label>Status</label>
+        <select id="salesStatus">
+          <option value="Pending">Pending</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div style="flex:1 1 100%">
+        <label>Internal Notes</label>
+        <textarea id="salesNotes" rows="2"></textarea>
+      </div>
+    </div>
+    <!-- Source field to link this Sales Order to other documents -->
+    <div class="form-row">
+      <div>
+        <label>Source</label>
+        <input type="text" id="salesSource" />
+      </div>
+    </div>
+    <h2>Items</h2>
+    <table class="items-table" id="salesItemsTable">
+      <thead>
+        <tr>
+          <th style="width:8%">Part Number</th>
+          <th style="width:20%">Description</th>
+          <!-- Removed UOM and Discount columns as per latest requirements -->
+          <th style="width:10%">Qty</th>
+          <th style="width:14%">Unit Price</th>
+          <th style="width:8%">Tax %</th>
+          <th style="width:20%">Vendor</th>
+          <th style="width:12%">Line Total</th>
+          <th style="width:6%"></th>
+        </tr>
+      </thead>
+      <tbody id="salesItemsBody">
+      </tbody>
+    </table>
+    <button class="btn" id="salesAddItemBtn" type="button">+ Add Item</button>
+    <div class="totals">
+      <table>
+        <tr><td>Subtotal:</td><td style="text-align:right;" id="salesSubtotal">0.00</td></tr>
+        <tr><td>Tax:</td><td style="text-align:right;" id="salesTaxTotal">0.00</td></tr>
+        <tr>
+          <td>Shipping:</td><td><input type="number" id="salesShippingTotal" value="0" /></td>
+        </tr>
+        <tr><td>Rounding:</td><td><input type="number" id="salesRounding" value="0" /></td></tr>
+        <tr><th>Grand Total:</th><th style="text-align:right;" id="salesGrandTotal">0.00</th></tr>
+      </table>
+    </div>
+    <div style="clear:both;"></div>
+    <div>
+      <button class="btn" id="saveSalesBtn">Save Sales Order</button>
+      <button class="btn" id="convertToPOBtn">Convert to Purchase Order</button>
+      <button class="btn" id="convertToInvoiceBtn">Create Invoice</button>
+      <button class="btn" id="convertToDOBtn">Create Delivery Order</button>
+      <button class="btn" id="backSalesBtn" type="button">Back to List</button>
+    </div>
+  </div>
+  <footer>
+    &copy; <span id="yearSpan"></span> Datatec Hardware Sdn Bhd. All rights reserved.
+  </footer>
+  <script src="common.js"></script>
+  <script src="sales_form.js"></script>
+</body>
+</html>

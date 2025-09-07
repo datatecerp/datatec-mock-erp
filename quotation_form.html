@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quotation Form - Datatec ERP</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <img src="assets/company-logo.jpg" alt="Datatec logo">
+    <div class="company-info">
+      <h1>Datatec ERP</h1>
+      <p>Quotation Form</p>
+    </div>
+  </header>
+  <nav>
+    <a href="quotation_list.html" class="active">Quotations</a>
+    <a href="sales_list.html">Sales Orders</a>
+    <a href="po_list.html">Purchase Orders</a>
+    <a href="invoice_list.html">Invoices</a>
+    <a href="do_list.html">Delivery Orders</a>
+    <a href="items.html">Items</a>
+  </nav>
+  <div class="container">
+    <h1 class="page-title" id="formTitle">New Quotation</h1>
+    <!-- Hidden field to store record id -->
+    <input type="hidden" id="recordId" />
+    <div class="form-row">
+      <div>
+        <label>Quotation No.</label>
+        <input type="text" id="quotationNumber" readonly />
+      </div>
+      <div>
+        <label>Date</label>
+        <input type="date" id="quotationDate" />
+      </div>
+      <div>
+        <label>Currency</label>
+        <select id="quotationCurrency">
+          <option value="MYR">MYR</option>
+          <option value="USD">USD</option>
+          <option value="SGD">SGD</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Customer</label>
+        <input type="text" id="quotationCustomer" list="customerList" />
+        <datalist id="customerList"><!-- customers inserted by JS --></datalist>
+      </div>
+      <div>
+        <label>Attention</label>
+        <input type="text" id="quotationAttention" />
+      </div>
+      <!-- Removed Email / Phone field as per latest requirements -->
+      <!-- <div>
+        <label>Email / Phone</label>
+        <input type="text" id="quotationEmail" />
+      </div> -->
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Billing Address</label>
+        <textarea id="quotationBilling" rows="3"></textarea>
+      </div>
+      <div>
+        <label>Shipping Address</label>
+        <textarea id="quotationShipping" rows="3"></textarea>
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Tax Scheme (%)</label>
+        <input type="number" id="quotationTaxScheme" step="0.01" />
+      </div>
+      <div>
+        <label>Payment Terms</label>
+        <input type="text" id="quotationPaymentTerms" />
+      </div>
+      <div>
+        <label>Validity / Expiry</label>
+        <input type="date" id="quotationValidity" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Salesperson</label>
+        <input type="text" id="quotationSalesperson" />
+      </div>
+      <div>
+        <label>Remarks</label>
+        <input type="text" id="quotationRemarks" />
+      </div>
+    </div>
+    <h2>Items</h2>
+    <table class="items-table" id="quotationItemsTable">
+      <thead>
+        <tr>
+          <th style="width:12%">Part Number</th>
+          <th style="width:32%">Description</th>
+          <th style="width:10%">Qty</th>
+          <th style="width:16%">Unit Price</th>
+          <th style="width:10%">Tax %</th>
+          <th style="width:16%">Line Total</th>
+          <th style="width:4%"></th>
+        </tr>
+      </thead>
+      <tbody id="quotationItemsBody">
+      </tbody>
+    </table>
+    <button class="btn" id="addItemBtn" type="button">+ Add Item</button>
+    <div class="totals">
+      <table>
+        <tr><td>Subtotal:</td><td style="text-align:right;" id="quotationSubtotal">0.00</td></tr>
+        <tr><td>Tax:</td><td style="text-align:right;" id="quotationTaxTotal">0.00</td></tr>
+        <tr>
+          <td>Shipping:</td>
+          <td><input type="number" id="quotationShippingTotal" value="0" /></td>
+        </tr>
+        <tr><th>Grand Total:</th><th style="text-align:right;" id="quotationGrandTotal">0.00</th></tr>
+      </table>
+    </div>
+    <div style="clear:both;"></div>
+    <div>
+      <button class="btn" id="saveQuotationBtn">Save Quotation</button>
+      <button class="btn" id="convertToSalesBtn">Convert to Sales Order</button>
+      <button class="btn" id="exportQuotationBtn">Export PDF</button>
+      <button class="btn" id="backBtn" type="button">Back to List</button>
+    </div>
+  </div>
+  <footer>
+    &copy; <span id="yearSpan"></span> Datatec Hardware Sdn Bhd. All rights reserved.
+  </footer>
+  <script src="common.js"></script>
+  <script src="quotation_form.js"></script>
+</body>
+</html>

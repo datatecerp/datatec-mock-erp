@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice Form - Datatec ERP</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <img src="assets/company-logo.jpg" alt="Datatec logo">
+    <div class="company-info">
+      <h1>Datatec ERP</h1>
+      <p>Invoice Form</p>
+    </div>
+  </header>
+  <nav>
+    <a href="quotation_list.html">Quotations</a>
+    <a href="sales_list.html">Sales Orders</a>
+    <a href="po_list.html">Purchase Orders</a>
+    <a href="invoice_list.html" class="active">Invoices</a>
+    <a href="do_list.html">Delivery Orders</a>
+    <a href="items.html">Items</a>
+  </nav>
+  <div class="container">
+    <h1 class="page-title" id="invoiceFormTitle">New Invoice</h1>
+    <input type="hidden" id="invoiceRecordId" />
+    <div class="form-row">
+      <div>
+        <label>Invoice No.</label>
+        <input type="text" id="invoiceNumber" readonly />
+      </div>
+      <div>
+        <label>Invoice Date</label>
+        <input type="date" id="invoiceDate" />
+      </div>
+      <div>
+        <label>Due Date</label>
+        <input type="date" id="invoiceDueDate" />
+      </div>
+      <div>
+        <label>SO Number</label>
+        <input type="text" id="invoiceSONumber" readonly />
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Customer</label>
+        <input type="text" id="invoiceCustomer" list="customerList" />
+        <datalist id="customerList"></datalist>
+      </div>
+    </div>
+    <!-- New Source field for invoice, links back to Sales Order source -->
+    <div class="form-row">
+      <div>
+        <label>Source</label>
+        <input type="text" id="invoiceSource" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Billing Address</label>
+        <textarea id="invoiceBilling" rows="3"></textarea>
+      </div>
+      <div>
+        <label>Shipping Address</label>
+        <textarea id="invoiceShipping" rows="3"></textarea>
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Currency</label>
+        <select id="invoiceCurrency">
+          <option value="MYR">MYR</option>
+          <option value="USD">USD</option>
+          <option value="SGD">SGD</option>
+        </select>
+      </div>
+      <div>
+        <label>Tax Scheme (%)</label>
+        <input type="number" id="invoiceTaxScheme" step="0.01" />
+      </div>
+    </div>
+    <!-- Payment Terms field -->
+    <div class="form-row">
+      <div>
+        <label>Payment Terms</label>
+        <select id="invoicePaymentTerms">
+          <option value="30 days">30 days</option>
+          <option value="45 days">45 days</option>
+          <option value="60 days">60 days</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Invoice status (Paid/Unpaid) -->
+    <div class="form-row">
+      <div>
+        <label>Status</label>
+        <select id="invoiceStatus">
+          <option value="Unpaid">Unpaid</option>
+          <option value="Paid">Paid</option>
+        </select>
+      </div>
+    </div>
+    <h2>Items</h2>
+    <table class="items-table" id="invoiceItemsTable">
+      <thead>
+        <tr>
+          <th style="width:12%">Part Number</th>
+          <th style="width:38%">Description</th>
+          <th style="width:10%">Qty</th>
+          <th style="width:15%">Unit Price</th>
+          <th style="width:10%">Tax %</th>
+          <th style="width:15%">Line Total</th>
+          <th style="width:6%"></th>
+        </tr>
+      </thead>
+      <tbody id="invoiceItemsBody">
+      </tbody>
+    </table>
+    <button class="btn" id="invoiceAddItemBtn" type="button">+ Add Item</button>
+    <div class="totals">
+      <table>
+        <tr><td>Subtotal:</td><td style="text-align:right;" id="invoiceSubtotal">0.00</td></tr>
+        <tr><td>Tax:</td><td style="text-align:right;" id="invoiceTaxTotal">0.00</td></tr>
+        <tr>
+          <td>Shipping:</td><td><input type="number" id="invoiceShippingTotal" value="0" /></td>
+        </tr>
+        <tr><th style="font-weight:bold;">Grand Total:</th><th style="text-align:right;font-weight:bold;" id="invoiceGrandTotal">0.00</th></tr>
+      </table>
+    </div>
+    <div style="clear:both;"></div>
+    <div>
+      <button class="btn" id="saveInvoiceBtn">Save Invoice</button>
+      <button class="btn" id="exportInvoiceBtn" type="button">Export PDF</button>
+      <!-- View Sales Order button will be shown if invoice is linked to a sales order -->
+      <button class="btn" id="viewSOBtn" type="button">View SO</button>
+      <button class="btn" id="backInvoiceBtn" type="button">Back to List</button>
+    </div>
+  </div>
+  <footer>
+    &copy; <span id="yearSpan"></span> Datatec Hardware Sdn Bhd. All rights reserved.
+  </footer>
+  <script src="common.js"></script>
+  <script src="invoice_form.js"></script>
+</body>
+</html>

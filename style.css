@@ -1,0 +1,157 @@
+/*
+ * Datatec ERP Stylesheet
+ *
+ * Provides a clean and professional look with a blue colour palette
+ * inspired by the Datatec branding. Reusable across all pages.
+ */
+
+/* Reset some basic styles */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+header {
+  background-color: #073763;
+  color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+}
+header img {
+  width: 60px;
+  height: auto;
+  margin-right: 15px;
+}
+header .company-info {
+  line-height: 1.2;
+}
+header .company-info h1 {
+  margin: 0;
+  font-size: 22px;
+}
+header .company-info p {
+  margin: 2px 0;
+  font-size: 12px;
+}
+
+nav {
+  background-color: #073763;
+  display: flex;
+  padding: 0 20px;
+}
+nav a {
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin-right: 10px;
+  font-size: 14px;
+}
+nav a.active, nav a:hover {
+  background-color: #0b5394;
+}
+
+.container {
+  padding: 20px;
+}
+
+h1.page-title {
+  font-size: 24px;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.btn {
+  display: inline-block;
+  background-color: #0b5394;
+  color: #fff;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  margin: 5px 5px 5px 0;
+  font-size: 14px;
+}
+.btn:hover {
+  background-color: #073763;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 14px;
+}
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px;
+}
+table th {
+  background-color: #e5f0ff;
+  text-align: left;
+}
+
+input[type="text"], input[type="number"], input[type="date"], select, textarea {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+textarea {
+  resize: vertical;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.form-row > div {
+  flex: 1 1 200px;
+  min-width: 180px;
+}
+
+.items-table th, .items-table td {
+  text-align: left;
+}
+.line-total-cell {
+  text-align: right;
+}
+
+.totals {
+  margin-top: 20px;
+  float: right;
+  width: 40%;
+}
+.totals table {
+  width: 100%;
+  border: none;
+}
+.totals table td {
+  border: none;
+  padding: 3px 0;
+}
+.totals table th {
+  text-align: left;
+}
+
+footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  padding: 10px 0;
+  border-top: 1px solid #ccc;
+}
+
+/* Table row highlight on hover */
+tbody tr:hover {
+  background-color: #f3f9ff;
+}

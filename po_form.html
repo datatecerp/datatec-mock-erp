@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Purchase Order Form - Datatec ERP</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <img src="assets/company-logo.jpg" alt="Datatec logo">
+    <div class="company-info">
+      <h1>Datatec ERP</h1>
+      <p>Purchase Order Form</p>
+    </div>
+  </header>
+  <nav>
+    <a href="quotation_list.html">Quotations</a>
+    <a href="sales_list.html">Sales Orders</a>
+    <a href="po_list.html" class="active">Purchase Orders</a>
+    <a href="invoice_list.html">Invoices</a>
+    <a href="do_list.html">Delivery Orders</a>
+    <a href="items.html">Items</a>
+  </nav>
+  <div class="container">
+    <h1 class="page-title" id="poFormTitle">New Purchase Order</h1>
+    <input type="hidden" id="poRecordId" />
+    <div class="form-row">
+      <div>
+        <label>Purchase Order No.</label>
+        <input type="text" id="purchaseOrderNumber" readonly />
+      </div>
+      <div>
+        <label>PO Date</label>
+        <input type="date" id="purchaseOrderDate" />
+      </div>
+      <div>
+        <label>Expected Date</label>
+        <input type="date" id="expectedDate" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Vendor</label>
+        <input type="text" id="poVendor" list="vendorList" />
+        <datalist id="vendorList"></datalist>
+      </div>
+      <div>
+        <label>Ship-to</label>
+        <textarea id="poShipTo" rows="3"></textarea>
+      </div>
+      <div>
+        <label>Terms</label>
+        <input type="text" id="poTerms" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Currency</label>
+        <select id="poCurrency">
+          <option value="MYR">MYR</option>
+          <option value="USD">USD</option>
+          <option value="SGD">SGD</option>
+        </select>
+      </div>
+      <div>
+        <label>Tax Scheme (%)</label>
+        <input type="number" id="poTaxScheme" step="0.01" />
+      </div>
+      <div>
+        <label>Linked SO</label>
+        <select id="linkedSalesOrder">
+          <option value="">-- Select SO --</option>
+        </select>
+      </div>
+    </div>
+    <h2>Items</h2>
+    <table class="items-table" id="poItemsTable">
+      <thead>
+        <tr>
+          <th style="width:12%">Part Number</th>
+          <th style="width:34%">Description</th>
+          <th style="width:10%">Qty</th>
+          <th style="width:18%">Unit Price</th>
+          <th style="width:10%">Tax %</th>
+          <th style="width:18%">Line Total</th>
+          <th style="width:6%"></th>
+        </tr>
+      </thead>
+      <tbody id="poItemsBody"></tbody>
+    </table>
+    <button class="btn" id="poAddItemBtn" type="button">+ Add Item</button>
+    <div class="totals">
+      <table>
+        <tr><td>Subtotal:</td><td style="text-align:right;" id="poSubtotal">0.00</td></tr>
+        <tr><td>Tax:</td><td style="text-align:right;" id="poTaxTotal">0.00</td></tr>
+        <tr><td>Shipping:</td><td><input type="number" id="poShippingTotal" value="0" /></td></tr>
+        <tr><th>Grand Total:</th><th style="text-align:right;" id="poGrandTotal">0.00</th></tr>
+      </table>
+    </div>
+    <div style="clear:both;"></div>
+    <div>
+      <button class="btn" id="savePoBtn">Save Purchase Order</button>
+      <button class="btn" id="exportPoBtn">Export PDF</button>
+      <button class="btn" id="backPoBtn" type="button">Back to List</button>
+    </div>
+  </div>
+  <footer>
+    &copy; <span id="yearSpan"></span> Datatec Hardware Sdn Bhd. All rights reserved.
+  </footer>
+  <script src="common.js"></script>
+  <script src="po_form.js"></script>
+</body>
+</html>

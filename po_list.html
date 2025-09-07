@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Purchase Orders - Datatec ERP</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <img src="assets/company-logo.jpg" alt="Datatec logo">
+    <div class="company-info">
+      <h1>Datatec ERP</h1>
+      <p>Purchase Order Management</p>
+    </div>
+  </header>
+  <nav>
+    <a href="quotation_list.html">Quotations</a>
+    <a href="sales_list.html">Sales Orders</a>
+    <a href="po_list.html" class="active">Purchase Orders</a>
+    <a href="invoice_list.html">Invoices</a>
+    <a href="do_list.html">Delivery Orders</a>
+    <a href="items.html">Items</a>
+  </nav>
+  <div class="container">
+    <h1 class="page-title">Purchase Orders</h1>
+    <button class="btn" id="newPoBtn">New Purchase Order</button>
+    <table id="poTable">
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>Date</th>
+          <th>SO Number</th>
+          <th>Vendor</th>
+          <th>Grand Total</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  <footer>
+    &copy; <span id="yearSpan"></span> Datatec Hardware Sdn Bhd. All rights reserved.
+  </footer>
+  <script src="common.js"></script>
+  <script src="po_list.js"></script>
+</body>
+</html>

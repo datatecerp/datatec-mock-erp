@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Item Form - Datatec ERP</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <img src="assets/company-logo.jpg" alt="Datatec logo">
+    <div class="company-info">
+      <h1>Datatec ERP</h1>
+      <p>Item Details</p>
+    </div>
+  </header>
+  <nav>
+    <a href="quotation_list.html">Quotations</a>
+    <a href="sales_list.html">Sales Orders</a>
+    <a href="po_list.html">Purchase Orders</a>
+    <a href="invoice_list.html">Invoices</a>
+    <a href="do_list.html">Delivery Orders</a>
+    <a href="items.html" class="active">Items</a>
+  </nav>
+  <div class="container">
+    <h1 class="page-title" id="itemFormTitle">New Item</h1>
+    <input type="hidden" id="itemId" />
+    <div class="form-row">
+      <div>
+        <label>Part Number</label>
+        <input type="text" id="itemSku" />
+      </div>
+      <div>
+        <label>Description</label>
+        <input type="text" id="itemDescription" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Unit Price</label>
+        <input type="number" id="itemPrice" step="0.01" />
+      </div>
+    </div>
+    <div>
+      <button class="btn" id="saveItemBtn">Save Item</button>
+      <button class="btn" id="backItemBtn" type="button">Back to List</button>
+    </div>
+  </div>
+  <footer>
+    &copy; <span id="yearSpan"></span> Datatec Hardware Sdn Bhd. All rights reserved.
+  </footer>
+  <script src="common.js"></script>
+  <script src="item_form.js"></script>
+</body>
+</html>

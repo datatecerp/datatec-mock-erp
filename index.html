@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Datatec ERP</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header with logo and company name -->
+  <header>
+    <img src="assets/company-logo.jpg" alt="Datatec logo">
+    <div class="company-info">
+      <h1>Datatec ERP</h1>
+      <p>Offline Enterprise Resource Planning System</p>
+    </div>
+  </header>
+  <!-- Navigation -->
+  <nav>
+    <a href="quotation_list.html">Quotations</a>
+    <a href="sales_list.html">Sales Orders</a>
+    <a href="po_list.html">Purchase Orders</a>
+    <a href="invoice_list.html">Invoices</a>
+    <a href="do_list.html">Delivery Orders</a>
+    <a href="items.html">Items</a>
+  </nav>
+  <div class="container">
+    <h1 class="page-title">Welcome to Datatec ERP</h1>
+    <p>This offline web application allows you to manage quotations, sales orders, purchase orders and inventory items without an internet connection. Use the navigation above to get started.</p>
+  </div>
+  <footer>
+    &copy; <span id="yearSpan"></span> Datatec Hardware Sdn Bhd. All rights reserved.
+  </footer>
+  <script>
+    // Set current year
+    document.getElementById('yearSpan').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
