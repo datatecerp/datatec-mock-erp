@@ -11,7 +11,6 @@
  * @returns {any}
  */
 function getData(key, defaultValue) {
-   
   const raw = localStorage.getItem(key);
   if (!raw) return defaultValue;
   try {
@@ -28,7 +27,6 @@ function getData(key, defaultValue) {
  */
 function setData(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
-    syncToRemote();
 }
 
 /**
@@ -131,10 +129,8 @@ function deleteRecord(storeKey, id) {
   const list = getData(storeKey, []);
   const newList = list.filter((r) => r.id !== id);
   setData(storeKey, newList);
-    syncToRemote();
 }
 
-  
 /**
  * Format a number as currency with two decimal places.
  * @param {number} value
@@ -156,56 +152,102 @@ window.datatecStorage = {
   generateId,
 };
 
-/** Remote sync configuration */
-// Replace with your deployed Google Apps Script URL
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwIvP04lEelvkg-RCbY4Ce83nrqTT05D5w9kjg4Vu4F6bL5oLcFB3jjPNKMRI0u-bw/exec';
+/*
+ * ------------------ Google Apps Script Integration ------------------
+ * To enable automatic, cross-device synchronization of ERP data, specify
+ * the Web App URL of your Google Apps Script deployment below. The Apps
+ * Script should implement doGet() to return a JSON object representing
+ * your stored data and doPost() to accept a JSON payload and save it.
+ *
+ * Once APPS_SCRIPT_URL is set, the ERP will fetch remote data on page
+ * load and write all localStorage entries to Google Drive after each
+ * update operation.
+ *
+ * Replace 'YOUR_SCRIPT_URL' with the actual URL from your Apps Script
+ * deployment (e.g. https://script.google.com/macros/s/AKfycbx.../exec).
+ */
+// Set this to your deployed Google Apps Script URL. This allows the ERP
+// to load data from Google Drive and sync changes automatically.
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoJCnH3Y46vjG9W-ecoQCCVF1Z_CgNZD6AlvFhk8uQnUnNxjwCb7VJcCRQVHoEd3R9g/exec';
 
+/**
+ * Download data from Google Drive via Apps Script and populate localStorage.
+ * If the script URL is not defined, this function silently aborts.
+ */
 async function loadRemoteData() {
-  if (!APPS_SCRIPT_URL) return;
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_SCRIPT_URL') {
+    return;
+  }
   try {
-    const response = await fetch(`${APPS_SCRIPT_URL}?action=read`);
-    if (!response.ok) throw new Error('Network response was not ok');
-    const data = await response.json();
-    Object.keys(data).forEach(key => {
-      if (data[key] !== null) {
+    const resp = await fetch(APPS_SCRIPT_URL);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    Object.keys(data).forEach((key) => {
+      try {
         localStorage.setItem(key, JSON.stringify(data[key]));
+      } catch (e) {
+        console.error('Failed to write key', key, e);
       }
     });
-    console.log('Loaded remote data');
-  } catch (error) {
-    console.error('Failed to load remote data:', error);
+  } catch (err) {
+    console.error('Error loading remote data', err);
   }
 }
 
+/**
+ * Upload all localStorage data to Google Drive via Apps Script.
+ * Serializes the entire contents of localStorage and posts it to the
+ * Apps Script endpoint. The Apps Script must handle saving the JSON.
+ */
 async function syncToRemote() {
-  if (!APPS_SCRIPT_URL) return;
-  const keys = [
-    'customers',
-    'suppliers',
-    'items',
-    'quotations',
-    'sales',
-    'deliveries',
-    'invoices',
-    'purchaseOrders'
-  ];
-  const payload = {};
-  keys.forEach(key => {
-    const raw = localStorage.getItem(key);
-    payload[key] = raw ? JSON.parse(raw) : null;
-  });
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_SCRIPT_URL') {
+    return;
+  }
   try {
-    const resp = await fetch(APPS_SCRIPT_URL, {
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      try {
+        data[key] = JSON.parse(localStorage.getItem(key));
+      } catch (e) {
+        data[key] = localStorage.getItem(key);
+      }
+    }
+    await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'write', data: payload })
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
-    if (!resp.ok) throw new Error('Network response was not ok');
-    console.log('Synced data to remote');
-  } catch (error) {
-    console.error('Failed to sync data to remote:', error);
+  } catch (err) {
+    console.error('Error syncing data to remote', err);
   }
 }
 
-// Automatically load remote data on page load
-window.addEventListener('DOMContentLoaded', loadRemoteData);
+// Preserve references to the original functions
+const originalSetData = setData;
+const originalDeleteRecord = deleteRecord;
+
+/**
+ * Override setData to update localStorage normally and then sync remote.
+ * Does not wait for the remote sync to complete.
+ */
+setData = function (key, value) {
+  originalSetData(key, value);
+  // Fire-and-forget remote sync
+  syncToRemote();
+};
+
+/**
+ * Override deleteRecord to update localStorage and then sync remote.
+ */
+deleteRecord = function (storeKey, id) {
+  originalDeleteRecord(storeKey, id);
+  syncToRemote();
+};
+
+// When the window loads, fetch remote data to hydrate localStorage.
+window.addEventListener('load', () => {
+  loadRemoteData();
+});
