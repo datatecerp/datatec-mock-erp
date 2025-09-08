@@ -5,17 +5,16 @@
  */
 
 /**
- * Base URL of the Google Apps Script web app used to persist data to Google Drive.
+ * Base URL for the ERP backend API. The backend exposes endpoints for
+ * reading and writing key/value pairs stored in a PostgreSQL database.
  *
- * The provided link exposes a simple API for saving and retrieving key/value
- * pairs. When a value is saved via setData it is transmitted to the script
- * using query parameters. Likewise, getData will asynchronously attempt to
- * refresh localStorage from the remote value. If the script is unreachable
- * or returns an unexpected response, the code gracefully falls back to
- * localStorage so the application remains functional offline.
+ * When a value is saved via setData it is sent using a POST request to
+ * this endpoint. Likewise, getData will asynchronously query the endpoint
+ * using a GET request. If the backend is unreachable or returns an
+ * unexpected response, the code gracefully falls back to localStorage so
+ * the application remains functional offline.
  */
-const DATATEC_DRIVE_ENDPOINT =
-  'https://script.google.com/macros/s/AKfycbwOeOZya8LzXWEN1KpUYRxUsWdIrlblfoPby7pCn8ErNEiszMfZuOx1i54OGFgK4i3U5A/exec';
+const DATATEC_API_ENDPOINT = '/api/data';
 
 /**
  * Retrieve a JSON‑parsed value from localStorage. This function will also
@@ -32,14 +31,12 @@ const DATATEC_DRIVE_ENDPOINT =
 function getData(key, defaultValue) {
   const raw = localStorage.getItem(key);
   if (raw !== null) {
-    // Kick off a remote fetch to refresh the cache in the background. Do not
-    // await this call so that UI remains responsive.
+    // Fire off a request to refresh the cache asynchronously.
     try {
       const params = new URLSearchParams({ key });
-      fetch(`${DATATEC_DRIVE_ENDPOINT}?${params.toString()}`)
+      fetch(`${DATATEC_API_ENDPOINT}?${params.toString()}`)
         .then((response) => response.json())
         .then((data) => {
-          // Expect data in the shape { value: <any> } from the script.
           if (data && data.value !== undefined) {
             localStorage.setItem(key, JSON.stringify(data.value));
           }
@@ -48,7 +45,7 @@ function getData(key, defaultValue) {
           /* ignore network errors; localStorage value will be used */
         });
     } catch (err) {
-      // swallow exceptions silently
+      /* ignore */
     }
     try {
       return JSON.parse(raw);
@@ -56,12 +53,12 @@ function getData(key, defaultValue) {
       return defaultValue;
     }
   }
-  // If no local value exists, attempt to fetch from remote. The fetch is still
-  // asynchronous; defaultValue is returned immediately. When the remote
-  // response arrives, it updates localStorage so future calls see the value.
+  // If no local value exists, attempt to fetch from remote. The request is
+  // asynchronous; defaultValue is returned immediately. When the response
+  // arrives, it updates localStorage so future calls see the value.
   try {
     const params = new URLSearchParams({ key });
-    fetch(`${DATATEC_DRIVE_ENDPOINT}?${params.toString()}`)
+    fetch(`${DATATEC_API_ENDPOINT}?${params.toString()}`)
       .then((response) => response.json())
       .then((data) => {
         if (data && data.value !== undefined) {
@@ -69,7 +66,7 @@ function getData(key, defaultValue) {
         }
       })
       .catch(() => {
-        /* ignore */
+        /* ignore network errors */
       });
   } catch (err) {
     /* ignore */
@@ -87,13 +84,15 @@ function getData(key, defaultValue) {
  * @param {string} key
  * @param {any} value
  */
-function syncToDrive(key, value) {
+// Send a key/value pair to the backend API. The request is asynchronous and
+// does not block the UI. If the request fails, no error is surfaced.
+function syncToBackend(key, value) {
   try {
-    const params = new URLSearchParams({
-      key,
-      value: JSON.stringify(value),
-    });
-    fetch(`${DATATEC_DRIVE_ENDPOINT}?${params.toString()}`).catch(() => {
+    fetch(DATATEC_API_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, value }),
+    }).catch(() => {
       /* ignore network errors */
     });
   } catch (err) {
@@ -114,7 +113,7 @@ function setData(key, value) {
   } catch (err) {
     // If storing locally fails (e.g. quota exceeded), still attempt to sync
   }
-  syncToDrive(key, value);
+  syncToBackend(key, value);
 }
 
 /**
