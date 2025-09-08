@@ -5,28 +5,116 @@
  */
 
 /**
- * Retrieve a JSON-parsed value from localStorage.
- * @param {string} key - The storage key.
- * @param {any} defaultValue - Value returned if key is not present.
+ * Base URL of the Google Apps Script web app used to persist data to Google Drive.
+ *
+ * The provided link exposes a simple API for saving and retrieving key/value
+ * pairs. When a value is saved via setData it is transmitted to the script
+ * using query parameters. Likewise, getData will asynchronously attempt to
+ * refresh localStorage from the remote value. If the script is unreachable
+ * or returns an unexpected response, the code gracefully falls back to
+ * localStorage so the application remains functional offline.
+ */
+const DATATEC_DRIVE_ENDPOINT =
+  'https://script.google.com/macros/s/AKfycbwOeOZya8LzXWEN1KpUYRxUsWdIrlblfoPby7pCn8ErNEiszMfZuOx1i54OGFgK4i3U5A/exec';
+
+/**
+ * Retrieve a JSON‑parsed value from localStorage. This function will also
+ * asynchronously query the remote endpoint to update the cached value if
+ * possible. The remote call never blocks execution; instead, the returned
+ * value is based on what is currently stored locally. If no local value
+ * exists, the defaultValue is returned immediately and a background request
+ * attempts to populate the cache.
+ *
+ * @param {string} key – The storage key.
+ * @param {any} defaultValue – Value returned if key is not present.
  * @returns {any}
  */
 function getData(key, defaultValue) {
   const raw = localStorage.getItem(key);
-  if (!raw) return defaultValue;
+  if (raw !== null) {
+    // Kick off a remote fetch to refresh the cache in the background. Do not
+    // await this call so that UI remains responsive.
+    try {
+      const params = new URLSearchParams({ key });
+      fetch(`${DATATEC_DRIVE_ENDPOINT}?${params.toString()}`)
+        .then((response) => response.json())
+        .then((data) => {
+          // Expect data in the shape { value: <any> } from the script.
+          if (data && data.value !== undefined) {
+            localStorage.setItem(key, JSON.stringify(data.value));
+          }
+        })
+        .catch(() => {
+          /* ignore network errors; localStorage value will be used */
+        });
+    } catch (err) {
+      // swallow exceptions silently
+    }
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      return defaultValue;
+    }
+  }
+  // If no local value exists, attempt to fetch from remote. The fetch is still
+  // asynchronous; defaultValue is returned immediately. When the remote
+  // response arrives, it updates localStorage so future calls see the value.
   try {
-    return JSON.parse(raw);
-  } catch (e) {
-    return defaultValue;
+    const params = new URLSearchParams({ key });
+    fetch(`${DATATEC_DRIVE_ENDPOINT}?${params.toString()}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && data.value !== undefined) {
+          localStorage.setItem(key, JSON.stringify(data.value));
+        }
+      })
+      .catch(() => {
+        /* ignore */
+      });
+  } catch (err) {
+    /* ignore */
+  }
+  return defaultValue;
+}
+
+/**
+ * Transmit a key/value pair to Google Drive via the Apps Script endpoint. The
+ * data is encoded in the query string so that GET requests can be used
+ * without requiring special headers. The call is fire‑and‑forget; it runs
+ * asynchronously and does not block UI updates. If the request fails, no
+ * error is surfaced to the user.
+ *
+ * @param {string} key
+ * @param {any} value
+ */
+function syncToDrive(key, value) {
+  try {
+    const params = new URLSearchParams({
+      key,
+      value: JSON.stringify(value),
+    });
+    fetch(`${DATATEC_DRIVE_ENDPOINT}?${params.toString()}`).catch(() => {
+      /* ignore network errors */
+    });
+  } catch (err) {
+    /* ignore */
   }
 }
 
 /**
- * Store a value into localStorage as JSON.
+ * Store a value into localStorage as JSON and schedule it for persistence to
+ * Google Drive. The remote sync runs asynchronously to avoid blocking the UI.
+ *
  * @param {string} key
  * @param {any} value
  */
 function setData(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (err) {
+    // If storing locally fails (e.g. quota exceeded), still attempt to sync
+  }
+  syncToDrive(key, value);
 }
 
 /**
@@ -151,103 +239,3 @@ window.datatecStorage = {
   formatMoney,
   generateId,
 };
-
-/*
- * ------------------ Google Apps Script Integration ------------------
- * To enable automatic, cross-device synchronization of ERP data, specify
- * the Web App URL of your Google Apps Script deployment below. The Apps
- * Script should implement doGet() to return a JSON object representing
- * your stored data and doPost() to accept a JSON payload and save it.
- *
- * Once APPS_SCRIPT_URL is set, the ERP will fetch remote data on page
- * load and write all localStorage entries to Google Drive after each
- * update operation.
- *
- * Replace 'YOUR_SCRIPT_URL' with the actual URL from your Apps Script
- * deployment (e.g. https://script.google.com/macros/s/AKfycbx.../exec).
- */
-// Set this to your deployed Google Apps Script URL. This allows the ERP
-// to load data from Google Drive and sync changes automatically.
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwOeOZya8LzXWEN1KpUYRxUsWdIrlblfoPby7pCn8ErNEiszMfZuOx1i54OGFgK4i3U5A/exec';
-
-/**
- * Download data from Google Drive via Apps Script and populate localStorage.
- * If the script URL is not defined, this function silently aborts.
- */
-async function loadRemoteData() {
-  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_SCRIPT_URL') {
-    return;
-  }
-  try {
-    const resp = await fetch(APPS_SCRIPT_URL);
-    if (!resp.ok) return;
-    const data = await resp.json();
-    Object.keys(data).forEach((key) => {
-      try {
-        localStorage.setItem(key, JSON.stringify(data[key]));
-      } catch (e) {
-        console.error('Failed to write key', key, e);
-      }
-    });
-  } catch (err) {
-    console.error('Error loading remote data', err);
-  }
-}
-
-/**
- * Upload all localStorage data to Google Drive via Apps Script.
- * Serializes the entire contents of localStorage and posts it to the
- * Apps Script endpoint. The Apps Script must handle saving the JSON.
- */
-async function syncToRemote() {
-  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_SCRIPT_URL') {
-    return;
-  }
-  try {
-    const data = {};
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      try {
-        data[key] = JSON.parse(localStorage.getItem(key));
-      } catch (e) {
-        data[key] = localStorage.getItem(key);
-      }
-    }
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-  } catch (err) {
-    console.error('Error syncing data to remote', err);
-  }
-}
-
-// Preserve references to the original functions
-const originalSetData = setData;
-const originalDeleteRecord = deleteRecord;
-
-/**
- * Override setData to update localStorage normally and then sync remote.
- * Does not wait for the remote sync to complete.
- */
-setData = function (key, value) {
-  originalSetData(key, value);
-  // Fire-and-forget remote sync
-  syncToRemote();
-};
-
-/**
- * Override deleteRecord to update localStorage and then sync remote.
- */
-deleteRecord = function (storeKey, id) {
-  originalDeleteRecord(storeKey, id);
-  syncToRemote();
-};
-
-// When the window loads, fetch remote data to hydrate localStorage.
-window.addEventListener('load', () => {
-  loadRemoteData();
-});
