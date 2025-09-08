@@ -168,7 +168,7 @@ window.datatecStorage = {
  */
 // Set this to your deployed Google Apps Script URL. This allows the ERP
 // to load data from Google Drive and sync changes automatically.
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzN0ThnCHndgPnH4aXthEDq9GsZg8mBt1FtM8ayhiutQohIJW7jrJGU3dXQmEJ6-ZzelQ/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwOeOZya8LzXWEN1KpUYRxUsWdIrlblfoPby7pCn8ErNEiszMfZuOx1i54OGFgK4i3U5A/exec';
 
 /**
  * Download data from Google Drive via Apps Script and populate localStorage.
