@@ -1,0 +1,15 @@
+{
+  "name": "datatec-mock-erp-v3",
+  "version": "1.0.0",
+  "description": "Datatec mock ERP updated to use a PostgreSQL backend for persistent storage.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.9",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "pg": "^8.11.1"
+  }
+}
